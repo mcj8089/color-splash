@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <title>Color Splash: Paint by Numbers — Free Online Coloring Game | Pipy Games</title>
+  <meta name="description" content="Color Splash is a relaxing paint-by-numbers game: pick a numbered color, tap matching regions, and reveal 56 hand-drawn pictures. Free, no download, plays in your browser." />
+  <meta name="keywords" content="coloring game, paint by numbers, color by number, relaxing games, free online games, color splash, pipygames" />
+  <meta name="theme-color" content="#f7b733" />
+
+  <!-- Open Graph / Twitter Card：社媒分享预览封面 -->
+  <meta property="og:type" content="website" />
+  <meta property="og:site_name" content="Pipy Games" />
+  <meta property="og:title" content="Color Splash — Free Online Paint by Numbers" />
+  <meta property="og:description" content="Pick a numbered color, tap matching regions, and reveal 56 hand-drawn pictures. Relaxing coloring fun, free in your browser." />
+  <meta property="og:image" content="assets/images/og-cover.jpg" />
+  <meta property="og:image:width" content="1200" />
+  <meta property="og:image:height" content="630" />
+  <meta property="og:url" content="https://pipygames.com/games/color-splash/" />
+  <meta name="twitter:card" content="summary_large_image" />
+  <meta name="twitter:title" content="Color Splash — Free Online Paint by Numbers" />
+  <meta name="twitter:description" content="Pick a numbered color, tap matching regions, and reveal 56 hand-drawn pictures." />
+  <meta name="twitter:image" content="assets/images/og-cover.jpg" />
+
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 64 64'%3E%3Ccircle cx='32' cy='32' r='30' fill='%23f7b733'/%3E%3Ccircle cx='22' cy='24' r='8' fill='%23e63946'/%3E%3Ccircle cx='42' cy='24' r='8' fill='%232a9d8f'/%3E%3Ccircle cx='32' cy='44' r='8' fill='%238338ec'/%3E%3C/svg%3E" />
+  <link rel="stylesheet" href="styles.css" />
+  <link rel="stylesheet" href="src/sdk/sdk-styles.css" />
+</head>
+<body>
+  <div id="app">
+
+    <!-- ============ 开屏加载（泼墨颜料动画） ============ -->
+    <section class="screen on" id="screen-boot" aria-label="Loading">
+      <div class="boot-splat splat-a"></div>
+      <div class="boot-splat splat-b"></div>
+      <div class="boot-splat splat-c"></div>
+      <div class="boot-inner">
+        <svg class="boot-logo" viewBox="0 0 120 120" aria-hidden="true">
+          <defs>
+            <linearGradient id="lg-wood" x1="0" y1="0" x2="1" y2="1">
+              <stop offset="0" stop-color="#d9a05f"/><stop offset="1" stop-color="#a9702f"/>
+            </linearGradient>
+          </defs>
+          <path d="M60 8 C90 8 112 30 112 58 c0 10-8 14-16 12 l-12 -3 c-7-2-12 2-12 9 0 9-7 16-16 16 C27 92 8 74 8 48 8 25 32 8 60 8 Z" fill="url(#lg-wood)" stroke="#7c5221" stroke-width="3"/>
+          <circle cx="38" cy="38" r="9" fill="#e63946"/><circle cx="66" cy="32" r="9" fill="#2a9d8f"/>
+          <circle cx="86" cy="52" r="8" fill="#118ab2"/><circle cx="34" cy="62" r="8" fill="#ffd166"/>
+        </svg>
+        <h1 class="boot-title">Color Splash</h1>
+        <p class="boot-sub" data-i18n="menu_subtitle">Coloring by numbers, reborn</p>
+        <div class="boot-progress" role="progressbar" aria-label="Loading progress">
+          <div class="boot-track"><i id="boot-fill"></i></div>
+          <span id="boot-status" data-i18n="boot_loading">Squeezing the paints</span>
+        </div>
+        <p class="boot-tip show" id="boot-tip"></p>
+        <p class="boot-brand">pipygames.com</p>
+      </div>
+    </section>
+
+    <!-- ============ 主菜单 ============ -->
+    <section class="screen" id="screen-menu" aria-label="Main menu">
+      <canvas id="bg-menu" class="bg-canvas" aria-hidden="true"></canvas>
+      <div class="menu-inner">
+        <div class="menu-logo">
+          <svg viewBox="0 0 120 120" aria-hidden="true">
+            <defs>
+              <linearGradient id="lg-wood2" x1="0" y1="0" x2="1" y2="1">
+                <stop offset="0" stop-color="#e8b063"/><stop offset="1" stop-color="#a9702f"/>
+              </linearGradient>
+            </defs>
+            <path d="M60 8 C90 8 112 30 112 58 c0 10-8 14-16 12 l-12 -3 c-7-2-12 2-12 9 0 9-7 16-16 16 C27 92 8 74 8 48 8 25 32 8 60 8 Z" fill="url(#lg-wood2)" stroke="#7c5221" stroke-width="3"/>
+            <circle cx="38" cy="38" r="9" fill="#e63946"/><circle cx="66" cy="32" r="9" fill="#2a9d8f"/>
+            <circle cx="86" cy="52" r="8" fill="#118ab2"/><circle cx="34" cy="62" r="8" fill="#ffd166"/>
+            <circle cx="60" cy="70" r="8" fill="#8338ec"/>
+          </svg>
+        </div>
+        <h1 class="menu-title">Color Splash</h1>
+        <p class="menu-sub" data-i18n="menu_subtitle">Coloring by numbers, reborn</p>
+        <p class="menu-stats" id="menu-stats"></p>
+        <div class="menu-buttons">
+          <button type="button" class="btn btn-primary btn-xl" id="btn-play">
+            <svg class="btn-ico" viewBox="0 0 24 24"><path fill="currentColor" d="M8 5.5v13l11-6.5z"/></svg>
+            <span class="btn-label" data-i18n="menu_play">Start Painting</span>
+          </button>
+          <button type="button" class="btn btn-secondary" id="btn-levels">
+            <svg class="btn-ico" viewBox="0 0 24 24"><path fill="currentColor" d="M4 5h16a1 1 0 0 1 1 1v12a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1zm2 3v2h5V8zm0 4v2h9v-2z"/></svg>
+            <span data-i18n="menu_levels">Gallery</span>
+          </button>
+          <div class="menu-row">
+            <button type="button" class="btn btn-secondary" id="btn-share">
+              <svg class="btn-ico" viewBox="0 0 24 24"><path fill="currentColor" d="M18 8a3 3 0 1 0-2.83-4H15a3 3 0 0 0 3 4zm-12 8a3 3 0 1 0 2.83 4H9A3 3 0 0 0 6 16zm12 0a3 3 0 1 0-2.83-4L8.6 14.2a3 3 0 0 0 0 3.6zm0 0L8.6 9.8"/></svg>
+              <span data-i18n="menu_share">Invite Friends</span>
+            </button>
+            <button type="button" class="btn btn-secondary" id="btn-howto">
+              <svg class="btn-ico" viewBox="0 0 24 24"><path fill="currentColor" d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zm0 4.2a1.4 1.4 0 1 1 0 2.8 1.4 1.4 0 0 1 0-2.8zM10.6 12h2.8v5.4h-2.8z"/></svg>
+              <span data-i18n="menu_howto">How to Play</span>
+            </button>
+          </div>
+          <div class="menu-row">
+            <button type="button" class="btn btn-ghost" id="btn-settings">
+              <svg class="btn-ico" viewBox="0 0 24 24"><path fill="currentColor" d="m19.4 13 .1-1-.1-1 2.1-1.6a.5.5 0 0 0 .1-.7l-2-3.4a.5.5 0 0 0-.6-.2l-2.5 1a7 7 0 0 0-1.7-1L14.4 2.5A.5.5 0 0 0 14 2h-4a.5.5 0 0 0-.5.4L9.2 5.1a7 7 0 0 0-1.7 1L5 5a.5.5 0 0 0-.6.2l-2 3.5a.5.5 0 0 0 .1.6L4.6 11l-.1 1 .1 1-2.1 1.6a.5.5 0 0 0-.1.7l2 3.4c.1.2.4.3.6.2l2.5-1a7 7 0 0 0 1.7 1l.3 2.7c0 .2.2.4.5.4h4c.2 0 .5-.2.5-.4l.3-2.7a7 7 0 0 0 1.7-1l2.5 1c.2.1.5 0 .6-.2l2-3.5a.5.5 0 0 0-.1-.6zM12 15.5a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7z"/></svg>
+              <span data-i18n="menu_settings">Settings</span>
+            </button>
+            <button type="button" class="btn btn-ghost danger" id="btn-reset">
+              <svg class="btn-ico" viewBox="0 0 24 24"><path fill="currentColor" d="M9 3h6a1 1 0 0 1 1 1v1h4v2h-1.1l-1 13.1A2 2 0 0 1 15.9 22H8.1a2 2 0 0 1-2-1.9L5.1 7H4V5h4V4a1 1 0 0 1 1-1z"/></svg>
+              <span data-i18n="menu_reset">Erase Save</span>
+            </button>
+          </div>
+        </div>
+        <p class="menu-footer" data-i18n="menu_footer">Free online coloring · no download · plays in your browser</p>
+      </div>
+    </section>
+
+    <!-- ============ 画廊（关卡选择） ============ -->
+    <section class="screen" id="screen-gallery" aria-label="Gallery">
+      <canvas id="bg-gallery" class="bg-canvas" aria-hidden="true"></canvas>
+      <header class="gal-header">
+        <button type="button" class="btn btn-round" id="btn-gallery-back" data-title-i18n="levels_back">
+          <svg viewBox="0 0 24 24"><path fill="currentColor" d="M15.5 4.5 8 12l7.5 7.5L14 21l-9-9 9-9z"/></svg>
+        </button>
+        <div class="gal-head-text">
+          <h2 data-i18n="levels_title">Gallery</h2>
+          <p id="gallery-sub"></p>
+        </div>
+        <div class="gal-pager">
+          <button type="button" class="btn btn-round" id="btn-page-prev" aria-label="Previous page">
+            <svg viewBox="0 0 24 24"><path fill="currentColor" d="M15.5 4.5 8 12l7.5 7.5L14 21l-9-9 9-9z"/></svg>
+          </button>
+          <span id="gallery-page-label"></span>
+          <button type="button" class="btn btn-round" id="btn-page-next" aria-label="Next page">
+            <svg viewBox="0 0 24 24"><path fill="currentColor" d="m8.5 4.5 7.5 7.5-7.5 7.5L10 21l9-9-9-9z"/></svg>
+          </button>
+        </div>
+      </header>
+      <div class="gal-scroll"><div class="gal-grid" id="gallery-grid"></div></div>
+    </section>
+
+    <!-- ============ 对局 ============ -->
+    <section class="screen" id="screen-game" aria-label="Game">
+      <canvas id="bg-game" class="bg-canvas" aria-hidden="true"></canvas>
+      <canvas id="game-canvas"></canvas>
+
+      <header class="hud-top">
+        <button type="button" class="btn btn-round" id="hud-back" title="Back to gallery">
+          <svg viewBox="0 0 24 24"><path fill="currentColor" d="M15.5 4.5 8 12l7.5 7.5L14 21l-9-9 9-9z"/></svg>
+        </button>
+        <span class="hud-level" id="hud-level"></span>
+        <div class="hud-right">
+          <button type="button" class="btn btn-round guide-btn" id="hud-guide" title="Replay guide">
+            <svg viewBox="0 0 24 24"><path fill="currentColor" d="M12 3a9 9 0 1 0 0 18 9 9 0 0 0 0-18zm0 4.2a1.4 1.4 0 1 1 0 2.8 1.4 1.4 0 0 1 0-2.8zM10.6 12h2.8v5.4h-2.8z"/></svg>
+          </button>
+          <button type="button" class="btn btn-round hint-btn" id="hud-hint" title="Find the next region">
+            <svg viewBox="0 0 24 24"><path fill="currentColor" d="M10 3a7 7 0 1 0 4.2 12.6l4.6 4.6 1.4-1.4-4.6-4.6A7 7 0 0 0 10 3zm0 2a5 5 0 1 1 0 10 5 5 0 0 1 0-10z"/></svg>
+            <b class="hint-badge" id="hint-badge">0</b>
+          </button>
+          <button type="button" class="btn btn-round" id="hud-settings" title="Settings">
+            <svg viewBox="0 0 24 24"><path fill="currentColor" d="m19.4 13 .1-1-.1-1 2.1-1.6a.5.5 0 0 0 .1-.7l-2-3.4a.5.5 0 0 0-.6-.2l-2.5 1a7 7 0 0 0-1.7-1L14.4 2.5A.5.5 0 0 0 14 2h-4a.5.5 0 0 0-.5.4L9.2 5.1a7 7 0 0 0-1.7 1L5 5a.5.5 0 0 0-.6.2l-2 3.5a.5.5 0 0 0 .1.6L4.6 11l-.1 1 .1 1-2.1 1.6a.5.5 0 0 0-.1.7l2 3.4c.1.2.4.3.6.2l2.5-1a7 7 0 0 0 1.7 1l.3 2.7c0 .2.2.4.5.4h4c.2 0 .5-.2.5-.4l.3-2.7a7 7 0 0 0 1.7-1l2.5 1c.2.1.5 0 .6-.2l2-3.5a.5.5 0 0 0-.1-.6zM12 15.5a3.5 3.5 0 1 1 0-7 3.5 3.5 0 0 1 0 7z"/></svg>
+          </button>
+        </div>
+      </header>
+
+      <div class="zoom-rail">
+        <svg viewBox="0 0 24 24" class="zoom-ico"><path fill="currentColor" d="M11 4a7 7 0 1 0 4.2 12.6l4.6 4.6 1.4-1.4-4.6-4.6A7 7 0 0 0 11 4zm0 2a5 5 0 1 1 0 10 5 5 0 0 1 0-10zm-1 2v2H8v2h2v2h2v-2h2V10h-2V8z"/></svg>
+        <input type="range" id="zoom-slider" min="0" max="1" step="0.01" value="0" aria-label="Zoom" />
+        <svg viewBox="0 0 24 24" class="zoom-ico"><path fill="currentColor" d="M11 4a7 7 0 1 0 4.2 12.6l4.6 4.6 1.4-1.4-4.6-4.6A7 7 0 0 0 11 4zm0 2a5 5 0 1 1 0 10 5 5 0 0 1 0-10zM8 10v2h6v-2z"/></svg>
+      </div>
+
+      <footer class="palette-dock">
+        <div class="palette-bar" id="palette-bar"></div>
+      </footer>
+    </section>
+
+    <!-- ============ 弹窗遮罩 ============ -->
+    <div id="overlay"></div>
+
+    <!-- 设置 -->
+    <div class="dlg" id="dlg-settings" role="dialog" aria-modal="true">
+      <div class="dlg-card">
+        <h3 class="dlg-title" data-i18n="settings_title">Settings</h3>
+        <div class="set-row"><span data-i18n="settings_sound">Sound</span><button type="button" class="switch" id="set-sound" role="switch" aria-checked="true"><i></i></button></div>
+        <div class="set-row"><span data-i18n="settings_music">Music</span><button type="button" class="switch" id="set-music" role="switch" aria-checked="true"><i></i></button></div>
+        <div class="set-row"><span data-i18n="settings_effects">Sound Effects</span><button type="button" class="switch" id="set-effects" role="switch" aria-checked="true"><i></i></button></div>
+        <button type="button" class="btn btn-primary dlg-close" id="btn-settings-close" data-i18n="settings_close">Close</button>
+      </div>
+    </div>
+
+    <!-- 玩法说明 -->
+    <div class="dlg" id="dlg-howto" role="dialog" aria-modal="true">
+      <div class="dlg-card">
+        <h3 class="dlg-title" data-i18n="howto_title">How to Play</h3>
+        <ol class="howto-list">
+          <li data-i18n="howto_1">Tap a numbered paint chip to pick that color.</li>
+          <li data-i18n="howto_2">Tap matching numbered regions on the canvas to fill them.</li>
+          <li data-i18n="howto_3">Drag across regions of the same number to paint faster.</li>
+          <li data-i18n="howto_4">Fill every region to complete the picture.</li>
+        </ol>
+        <div class="howto-pigments" aria-hidden="true">
+          <i style="--c:#e63946"></i><i style="--c:#f4a261"></i><i style="--c:#ffd166"></i>
+          <i style="--c:#2a9d8f"></i><i style="--c:#118ab2"></i><i style="--c:#8338ec"></i>
+        </div>
+        <button type="button" class="btn btn-primary dlg-close" id="btn-howto-close" data-i18n="settings_close">Close</button>
+      </div>
+    </div>
+
+    <!-- 通关 -->
+    <div class="dlg" id="dlg-complete" role="dialog" aria-modal="true">
+      <div class="dlg-card complete-card">
+        <div class="complete-medal" aria-hidden="true">
+          <svg viewBox="0 0 120 120"><circle cx="60" cy="60" r="52" fill="#ffd166"/><circle cx="60" cy="60" r="42" fill="#f7b733"/><path fill="#fff4e3" d="m60 30 8.7 17.6 19.4 2.8-14 13.7 3.3 19.3L60 74.4 42.6 83.4l3.3-19.3-14-13.7 19.4-2.8z"/></svg>
+        </div>
+        <h3 class="dlg-title" data-i18n="complete_title">Masterpiece!</h3>
+        <p class="complete-sub" id="complete-sub"></p>
+        <div class="complete-btns">
+          <button type="button" class="btn btn-primary" id="btn-complete-next" data-i18n="complete_next">Next Picture</button>
+          <button type="button" class="btn btn-secondary" id="btn-complete-gallery" data-i18n="complete_gallery">Gallery</button>
+          <button type="button" class="btn btn-secondary" id="btn-complete-share" data-i18n="complete_share">Share It</button>
+        </div>
+        <button type="button" class="dlg-x" id="btn-complete-close" aria-label="Close">✕</button>
+      </div>
+    </div>
+
+    <!-- 确认清档 -->
+    <div class="dlg" id="dlg-confirm" role="dialog" aria-modal="true">
+      <div class="dlg-card">
+        <h3 class="dlg-title" data-i18n="menu_reset">Erase Save</h3>
+        <p class="confirm-text" data-i18n="menu_reset_confirm">Erase all progress? This cannot be undone.</p>
+        <div class="confirm-btns">
+          <button type="button" class="btn btn-secondary" id="btn-confirm-no" data-i18n="settings_close">Close</button>
+          <button type="button" class="btn btn-primary danger" id="btn-confirm-yes" data-i18n="menu_reset">Erase Save</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- 分享面板（结构由 share.js 驱动） -->
+    <div class="dlg" id="dlg-share" role="dialog" aria-modal="true">
+      <div class="dlg-card share-card-ui">
+        <h3 class="dlg-title" data-i18n="share_title">Invite Friends</h3>
+        <input type="text" id="share-name" maxlength="18" data-i18n-ph="share_name_ph" placeholder="Your nickname (optional)" />
+        <p class="share-preview" id="share-preview"></p>
+        <div class="share-grid" id="share-grid"></div>
+        <div class="share-actions">
+          <button type="button" class="btn btn-secondary" id="btn-share-native" data-i18n="share_native">System Share</button>
+          <button type="button" class="btn btn-secondary" id="btn-share-copy" data-i18n="share_copy">Copy Link</button>
+          <button type="button" class="btn btn-secondary" id="btn-share-card" data-i18n="share_card">Make Card</button>
+        </div>
+        <div class="share-cardbox" id="share-cardbox" hidden>
+          <canvas id="share-canvas" width="1000" height="1000"></canvas>
+          <a class="btn btn-primary" id="share-card-download" download="color-splash-share-card.png" data-i18n="share_card_download">Download card</a>
+        </div>
+        <button type="button" class="dlg-x share-close" id="btn-share-close" aria-label="Close">✕</button>
+      </div>
+    </div>
+
+    <!-- 域名锁 -->
+    <div class="dlg" id="dlg-domain" role="dialog" aria-modal="true">
+      <div class="dlg-card domain-card">
+        <div class="domain-shield" aria-hidden="true">
+          <svg viewBox="0 0 24 24"><path fill="#fff" d="M12 2 4 5v6c0 5 3.4 9.4 8 11 4.6-1.6 8-6 8-11V5l-8-3z"/></svg>
+        </div>
+        <h3 class="dlg-title" data-i18n="domain_locked">Unauthorized site</h3>
+        <p class="confirm-text" id="domain-body"></p>
+        <a class="btn btn-primary" id="btn-domain-go" href="https://pipygames.com" data-i18n="domain_go">Go now</a>
+      </div>
+    </div>
+
+    <!-- Toast -->
+    <div id="toast" role="status"></div>
+  </div>
+
+  <!-- 公共 SDK：线上优先，本地兜底（源码在 lib/） -->
+  <script src="https://pipygames.com/sdk/pipysdk.min.js" onerror="window.__PIPY_ONLINE_SDK_FAILED__=true" async></script>
+  <script>window.PipySDK || document.write('<script src="lib/pipysdk.local.js"><\/script>');</script>
+  <script src="src/sdk/sdk.config.js"></script>
+
+  <div class="rotate-hint" data-i18n="rotate_hint">Rotate your device for the full studio view.</div>
+
+  <script src="src/sdk/gamesdk.js"></script>
+  <script type="importmap">
+    {
+      "imports": {
+        "three": "./lib/three.module.js"
+      }
+    }
+  </script>
+  <script type="module" src="src/main.js"></script>
+</body>
+</html>
